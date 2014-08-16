@@ -256,12 +256,18 @@ class BRAINSFitUITest(ScriptedLoadableModuleTest):
     # run with rigid plus bspline
     del parameters['linearTransform']
     parameters['useBSpline'] = True
+    parameters['numberOfIterations'] = 3
     parameters = logic.register(fixed,moving,parameters)
     self.delayDisplay("BSpline result:\n"+str(parameters))
 
-    bsplineNode = slicer.util.getNode(parameters['bsplineTransform'].GetID())
-    coefficients = bsplineNode.GetTransformFromParent().GetCoefficientData()
-    if coefficients.GetDimensions() != (17, 13, 15):
-      raise Exception("BSpline dimensions incorrect!")
+    bsplineNode = slicer.util.getNode(parameters['bsplineTransform'])
+    generalTransform = bsplineNode.GetTransformFromParent()
+    if generalTransform.GetClassName() != "vtkGeneralTransform":
+      raise Exception("BSpline incorrect type!")
+    else:
+      bsplineTransform = generalTransform.GetConcatenatedTransform(0)
+      coefficients = bsplineTransform.GetCoefficientData()
+      if coefficients.GetDimensions() != (17, 13, 15):
+        raise Exception("BSpline dimensions incorrect!")
 
     self.delayDisplay('Test passed!')
