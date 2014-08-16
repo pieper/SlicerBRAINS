@@ -259,4 +259,9 @@ class BRAINSFitUITest(ScriptedLoadableModuleTest):
     parameters = logic.register(fixed,moving,parameters)
     self.delayDisplay("BSpline result:\n"+str(parameters))
 
+    bsplineNode = slicer.util.getNode(parameters['bsplineTransform'].GetID())
+    coefficients = bsplineNode.GetTransformFromParent().GetCoefficientData()
+    if coefficients.GetDimensions() != (17, 13, 15):
+      raise Exception("BSpline dimensions incorrect!")
+
     self.delayDisplay('Test passed!')
