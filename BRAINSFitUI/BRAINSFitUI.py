@@ -185,9 +185,13 @@ class BRAINSFitUILogic(ScriptedLoadableModuleLogic):
 
     cliNode = slicer.cli.run(slicer.modules.brainsfit, None, parameters, delete_temporary_files=False)
     waitCount = 0
-    while cliNode.GetStatusString() != 'Completed' and waitCount < 100:
+    maxWait = 10000
+    while cliNode.GetStatusString() != 'Completed' and waitCount < maxWait:
       self.delayDisplay( "Running BRAINSFit... %d seconds" % waitCount )
       waitCount += 1
+
+    if waitCount == maxWait:
+      raise Exception("Registration took too long to run!")
 
     self.delayDisplay( "Finished after %d seconds" % waitCount )
     return parameters
